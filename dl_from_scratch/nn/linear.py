@@ -2,48 +2,6 @@ from dl_from_scratch.nn.base import Layer, Parameter
 
 import numpy as np
 
-from dl_from_scratch.nn.sequential import Sequential
-
-
-class MSE(Layer):
-    """Mean squared error layer
-    l = (targets - inputs) ** 2
-
-    dLdINPUTS = -2 * (targets - inputs)
-    """
-
-    def __init__(self) -> None:
-        self.initialize()
-
-    def initialize(self):
-        self._data = {}
-
-    def zero_grad(self):
-        pass
-
-    def forward(self, inputs: np.ndarray, targets: np.ndarray) -> np.ndarray:
-        """Forward pass
-        O = (I + T) ** 2
-        I: (bs, out_channels)
-        T: (bs, out_channels)
-        O: (bs, out_channels)
-        """
-        self._data['inputs'] = inputs.copy()
-        self._data['targets'] = targets.copy()
-        loss = np.power(targets - inputs, 2)
-        return loss
-
-    def backward(self, grad: np.ndarray) -> np.ndarray:
-        """Backward pass
-        grad: any
-        grad: (bs, out_channels)
-        """
-        grad = -2 * (self._data['targets'] - self._data['inputs'])
-        return grad
-        
-    def __str__(self) -> str:
-        return f'Sum: ()'
-
 
 class Linear(Layer):
     """Linear layer
@@ -80,7 +38,7 @@ class Linear(Layer):
     def forward(self, inputs: np.ndarray) -> np.ndarray:
         """Forward pass
         O = WX + B
-        X : (bs, in_channels)
+        X: (bs, in_channels)
         W: (in_channels, out_channels)
         B: (1, out_channels)
         O: (bs, out_channels)
@@ -93,10 +51,11 @@ class Linear(Layer):
 
     def backward(self, grad: np.ndarray) -> np.ndarray:
         """Backward pass
-        grad : (bs, out_channels)
+        grad_in: (bs, out_channels)
         dLdW: (in_channels, out_channels)
         dLdB: (1, out_channels)
         dLdO: (bs, out_channels)
+        grad_out: (bs, in_channels) 
         """
         # (in_channels, bs) @ (bs, out_dim) -> (in_channels, out_dim)
         self._parameters['w'].gradient += np.dot(self._forward_info['x'].T, grad)

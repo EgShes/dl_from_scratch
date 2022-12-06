@@ -1,7 +1,6 @@
 import pytest
 
-from dl_from_scratch.nn.linear import MSE, Linear
-from dl_from_scratch.nn.sequential import Sequential
+from dl_from_scratch.nn import Linear, Sequential, MSELoss
 
 
 @pytest.mark.parametrize(
@@ -13,7 +12,7 @@ from dl_from_scratch.nn.sequential import Sequential
 )
 def test_learns(boston_train, boston_val, layers):
     model = Sequential(*layers)
-    loss = MSE()
+    loss = MSELoss()
 
     num_epochs = 50
     lr = 0.0001

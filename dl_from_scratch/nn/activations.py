@@ -5,8 +5,8 @@ import numpy as np
 
 class ReLU(Activation):
     """
-    forward: 1 / (1 + np.exp(-inputs)) == sigmoid(inputs)
-    backward: sigmoid(inputs) * (1 - sigmoid(inputs))
+    forward: x if x >= 0 else 0
+    backward: 1 if grad >= 0 else 0
     """
 
     def zero_grad(self) -> None:
