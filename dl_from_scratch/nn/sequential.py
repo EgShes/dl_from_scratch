@@ -1,11 +1,11 @@
-from typing import Any, Iterable, Union
+from typing import Union
 
-from dl_from_scratch.nn.base import Layer, Activation
 import numpy as np
+
+from dl_from_scratch.nn.base import Activation, Layer
 
 
 class Sequential:
-
     def __init__(self, *layers: Union[Layer, Activation]) -> None:
         self._layers = list(layers)
 

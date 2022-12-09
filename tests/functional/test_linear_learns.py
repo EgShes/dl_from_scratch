@@ -1,14 +1,14 @@
 import pytest
 
-from dl_from_scratch.nn import Linear, Sequential, MSELoss
+from dl_from_scratch.nn import Linear, MSELoss, Sequential
 
 
 @pytest.mark.parametrize(
-    'layers',
+    "layers",
     [
-        (Linear(13, 1), ),
+        (Linear(13, 1),),
         (Linear(13, 7), Linear(7, 1)),
-    ]
+    ],
 )
 def test_learns(boston_train, boston_val, layers):
     model = Sequential(*layers)

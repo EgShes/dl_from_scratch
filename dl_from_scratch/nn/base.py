@@ -1,5 +1,4 @@
 from abc import ABC, abstractmethod
-
 from dataclasses import dataclass
 
 import numpy as np
@@ -94,4 +93,3 @@ class Loss(DifferentiableUnit):
     def parameters(self) -> dict[str, Parameter]:
         """Returns dict with parameters of the layer"""
         return {}
-

@@ -1,6 +1,6 @@
-from dl_from_scratch.nn.base import Activation
-
 import numpy as np
+
+from dl_from_scratch.nn.base import Activation
 
 
 class ReLU(Activation):
@@ -37,7 +37,7 @@ class Sigmoid(Activation):
         out: (bs, feature_size)
         """
         sigmoid = 1 / (1 + np.exp(-inputs))
-        self._forward_info['sigmoid'] = sigmoid.copy()
+        self._forward_info["sigmoid"] = sigmoid.copy()
         return sigmoid
 
     def backward(self, grad: np.ndarray) -> np.ndarray:
@@ -45,4 +45,4 @@ class Sigmoid(Activation):
         in: (bs, feature_size)
         out: (bs, feature_size)
         """
-        return grad * self._forward_info['sigmoid'] * (1 - self._forward_info['sigmoid'])
+        return grad * self._forward_info["sigmoid"] * (1 - self._forward_info["sigmoid"])

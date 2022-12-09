@@ -5,12 +5,11 @@ from numpy import ndarray
 
 
 class Loader:
-
     def __init__(self, x_data: ndarray, y_data: ndarray, batch_size: int, shuffle: bool = False):
         self._x_data = x_data
         self._y_data = y_data
         self._batch_size = batch_size
-        
+
         if shuffle:
             self._shuffle_data
 
@@ -26,11 +25,11 @@ class Loader:
 
     def __next__(self) -> Tuple[ndarray, ndarray]:
         i = next(self._range)
-        start, end = i, i+self._batch_size
+        start, end = i, i + self._batch_size
         if start > self._length:
             raise StopIteration
         return self._x_data[start:end], self._y_data[start:end]
-        
+
 
 # if __name__ == '__main__':
 

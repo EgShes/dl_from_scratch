@@ -1,7 +1,7 @@
+import numpy as np
+
 from dl_from_scratch.nn.base import Loss
 from dl_from_scratch.nn.functions import softmax
-
-import numpy as np
 
 
 class MSELoss(Loss):
@@ -28,8 +28,8 @@ class MSELoss(Loss):
         O: (bs, out_channels)
         """
         assert inputs.shape == targets.shape
-        self._data['inputs'] = inputs.copy()
-        self._data['targets'] = targets.copy()
+        self._data["inputs"] = inputs.copy()
+        self._data["targets"] = targets.copy()
         loss = np.power(targets - inputs, 2)
         return loss
 
@@ -38,11 +38,11 @@ class MSELoss(Loss):
         grad: any
         grad: (bs, out_channels)
         """
-        grad = -2 * (self._data['targets'] - self._data['inputs'])
+        grad = -2 * (self._data["targets"] - self._data["inputs"])
         return grad
-        
+
     def __str__(self) -> str:
-        return f'MSELoss()'
+        return "MSELoss()"
 
 
 class CrossEntropyLoss(Loss):
@@ -51,7 +51,7 @@ class CrossEntropyLoss(Loss):
 
     dLdINPUTS = -2 * (targets - inputs)
     """
-    
+
     def __init__(self, eps=1e-12) -> None:
         self.initialize()
         self._eps = eps
@@ -75,8 +75,8 @@ class CrossEntropyLoss(Loss):
         probs = softmax(inputs, dim=1)
         probs = np.clip(probs, self._eps, 1 - self._eps)  # make sure there is no 0 prob here
 
-        self._data['probs'] = probs.copy()
-        self._data['targets'] = targets.copy()
+        self._data["probs"] = probs.copy()
+        self._data["targets"] = targets.copy()
         loss = np.mean(-targets * np.log(probs) - (1 - targets) * np.log(1 - probs))
         return loss
 
@@ -86,8 +86,8 @@ class CrossEntropyLoss(Loss):
         grad: any
         grad: (bs, in_channels)
         """
-        grad = self._data['probs'] - self._data['targets']
+        grad = self._data["probs"] - self._data["targets"]
         return grad
-        
+
     def __str__(self) -> str:
-        return f'CrossEntropyLoss()'
+        return "CrossEntropyLoss()"
