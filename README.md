@@ -2,9 +2,9 @@
 
 The goal is to build and train UNETR
 
-- [] Linear regression
-- [] Perceptron
-- [] CNN (convs only)
-- [] CNN (convs + batchnorm)
-- [] VGG like
-- [] ResNet like
+- [x] Linear regression
+- [x] Perceptron
+- [ ] CNN (convs only)
+- [ ] CNN (convs + batchnorm)
+- [ ] VGG like
+- [ ] ResNet like
