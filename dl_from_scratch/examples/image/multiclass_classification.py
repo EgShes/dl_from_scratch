@@ -1,11 +1,13 @@
 import logging
+from typing import NamedTuple
 
 import numpy as np
 from sklearn.metrics import roc_auc_score
 from tqdm import tqdm
 
 import dl_from_scratch.nn as nn
-from dl_from_scratch.data.datasets import get_mnist_loaders
+from dl_from_scratch.data.loader import Loader
+from dl_from_scratch.data.utils import get_mnist_loaders
 from dl_from_scratch.nn.functions import softmax
 from dl_from_scratch.nn.losses import CrossEntropyLoss
 
@@ -13,13 +15,17 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def train(model: nn.Sequential, loader, loss: nn.losses.Loss) -> tuple[float, float]:
+class Metrics(NamedTuple):
+    loss: float
+    auc: float
+
+
+def train_epoch(model: nn.Sequential, loader: Loader, loss: nn.losses.Loss, lr: float) -> Metrics:
     preds, gts, losses = [], [], []
     for images, labels in tqdm(loader, total=len(loader), desc="Training"):
-        # TODO build my own Dataset and DataLoader
-        images, labels = images.numpy(), labels.numpy()
+        bs = images.shape[0]
 
-        images = images.reshape(batch_size, -1)
+        images = images.reshape(bs, -1)
         # TODO make to_one_hot function
         labels = np.eye(10)[labels]
 
@@ -41,20 +47,19 @@ def train(model: nn.Sequential, loader, loss: nn.losses.Loss) -> tuple[float, fl
 
     preds, gts = np.concatenate(preds), np.concatenate(gts)
     auc = roc_auc_score(gts, preds)
-    return loss, auc
+    return Metrics(loss, auc)
 
 
-def eval(
+def eval_epoch(
     model: nn.Sequential,
-    loader,
+    loader: Loader,
     loss: nn.losses.Loss,
-) -> tuple[float, float]:
+) -> Metrics:
     preds, gts, losses = [], [], []
     for images, labels in tqdm(loader, total=len(loader), desc="Evaluating"):
-        # TODO build my own Dataset and DataLoader
-        images, labels = images.numpy(), labels.numpy()
+        bs = images.shape[0]
 
-        images = images.reshape(1, -1)
+        images = images.reshape(bs, -1)
         # TODO make to_one_hot function
         labels = np.eye(10)[labels]
 
@@ -69,14 +74,15 @@ def eval(
 
     preds, gts = np.concatenate(preds), np.concatenate(gts)
     auc = roc_auc_score(gts, preds)
-    return loss, auc
+    return Metrics(loss, auc)
 
 
-if __name__ == "__main__":
-
-    batch_size = 32
-    num_epochs = 5
-    lr = 0.001
+def train_model(
+    batch_size: int = 50,
+    num_epochs: int = 5,
+    lr: float = 0.001,
+) -> tuple[list[Metrics], list[Metrics]]:
+    train_metrics, val_metrics = [], []
 
     train_loader, val_loader = get_mnist_loaders(batch_size=batch_size)
 
@@ -90,9 +96,28 @@ if __name__ == "__main__":
 
     loss = CrossEntropyLoss()
 
-    for epoch in range(num_epochs):
-        train_loss, train_auc = train(model, train_loader, loss)
-        logger.info(f"{train_loss=:.4f}, {train_auc=:.4f}")
+    logger.info("Evaluating model before training")
+    train_metrics.append(eval_epoch(model, train_loader, loss))
+    val_metrics.append(eval_epoch(model, val_loader, loss))
 
-        val_loss, val_auc = eval(model, val_loader, loss)
-        logger.info(f"{val_loss=:.4f}, {val_auc=:.4f}")
+    logger.info("Start training")
+    for _ in range(num_epochs):
+        train_metric = train_epoch(model, train_loader, loss, lr)
+        logger.info(f"{train_metric.loss=:.4f}, {train_metric.auc=:.4f}")
+
+        val_metric = eval_epoch(model, val_loader, loss)
+        logger.info(f"{val_metric.loss=:.4f}, {val_metric.auc=:.4f}")
+
+        train_metrics.append(train_metric)
+        val_metrics.append(val_metric)
+
+    return train_metrics, val_metrics
+
+
+if __name__ == "__main__":
+
+    batch_size = 101
+    num_epochs = 5
+    learning_rate = 0.001
+
+    train_model(batch_size, num_epochs, learning_rate)
