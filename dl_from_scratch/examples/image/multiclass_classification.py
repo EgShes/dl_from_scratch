@@ -19,7 +19,9 @@ class Metrics(NamedTuple):
     auc: float
 
 
-def train_epoch(model: nn.Sequential, loader: Loader, loss: nn.losses.Loss, lr: float) -> Metrics:
+def train_epoch(
+    model: nn.Sequential, loader: Loader, loss: nn.losses.Loss, optimizer: nn.Optimizer
+) -> Metrics:
     preds, gts, losses = [], [], []
     for images, labels in tqdm(loader, total=len(loader), desc="Training"):
         bs = images.shape[0]
@@ -33,14 +35,11 @@ def train_epoch(model: nn.Sequential, loader: Loader, loss: nn.losses.Loss, lr: 
         loss_val = loss(pred, labels)
         model.backward(loss.backward(1))
 
+        optimizer.step()
+
         preds.append(softmax(pred))
         gts.append(labels)
         losses.append(loss_val)
-
-        # update weights
-        for layer in model._layers:
-            for name, param in layer.parameters.items():
-                param.weight -= lr * param.gradient
 
     loss = np.mean(losses)
 
@@ -94,18 +93,19 @@ def train_model(
     )
 
     loss = nn.CrossEntropyLoss()
+    optimizer = nn.SGD(model=model, learning_rate=lr)
 
     logger.info("Evaluating model before training")
     train_metrics.append(eval_epoch(model, train_loader, loss))
     val_metrics.append(eval_epoch(model, val_loader, loss))
 
     logger.info("Start training")
-    for _ in range(num_epochs):
-        train_metric = train_epoch(model, train_loader, loss, lr)
-        logger.info(f"{train_metric.loss=:.4f}, {train_metric.auc=:.4f}")
+    for epoch in range(num_epochs):
+        train_metric = train_epoch(model, train_loader, loss, optimizer)
+        logger.info(f"Epoch {epoch+1}: {train_metric.loss=:.4f}, {train_metric.auc=:.4f}")
 
         val_metric = eval_epoch(model, val_loader, loss)
-        logger.info(f"{val_metric.loss=:.4f}, {val_metric.auc=:.4f}")
+        logger.info(f"Epoch {epoch+1}:{val_metric.loss=:.4f}, {val_metric.auc=:.4f}")
 
         train_metrics.append(train_metric)
         val_metrics.append(val_metric)
