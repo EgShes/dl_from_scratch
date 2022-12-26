@@ -2,7 +2,7 @@ from typing import Union
 
 import numpy as np
 
-from dl_from_scratch.nn.base import Activation, Layer
+from dl_from_scratch.nn.base import Activation, Layer, Parameter
 
 
 class Sequential:
@@ -26,6 +26,9 @@ class Sequential:
     def zero_grad(self):
         for layer in self._layers:
             layer.zero_grad()
+
+    def parameters(self) -> list[Parameter]:
+        return [param for layer in self._layers for param in layer.parameters.values()]
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
         return self.forward(inputs)

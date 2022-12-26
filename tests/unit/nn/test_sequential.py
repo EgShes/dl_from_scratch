@@ -2,6 +2,7 @@ import numpy as np
 import pytest
 
 from dl_from_scratch.nn import Linear, Sequential
+from dl_from_scratch.nn.base import Parameter
 
 
 class TestSequential:
@@ -16,6 +17,11 @@ class TestSequential:
     @pytest.fixture
     def model(self) -> Sequential:
         return Sequential(Linear(3, 20), Linear(20, 10))
+
+    def test_params(self, model: Sequential):
+        params = model.parameters()
+        assert len(params) == 4
+        assert all(isinstance(param, Parameter) for param in params)
 
     def test_forward(self, forward_inputs: np.ndarray, model: Sequential):
         logits = model(forward_inputs)
