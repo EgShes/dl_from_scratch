@@ -31,7 +31,7 @@ class MSELoss(Loss):
         self._data["inputs"] = inputs.copy()
         self._data["targets"] = targets.copy()
         loss = np.power(targets - inputs, 2)
-        return loss
+        return loss.mean()
 
     def backward(self, grad: np.ndarray) -> np.ndarray:
         """Backward pass

@@ -28,7 +28,7 @@ def get_boston_loaders(batch_size: int) -> Loaders:
     val_dataset = NumpyDataset(x_val, y_val)
 
     train_loader = Loader(train_dataset, batch_size, shuffle=True)
-    val_loader = Loader(val_dataset, 1, shuffle=True)
+    val_loader = Loader(val_dataset, 1, shuffle=False)
 
     return train_loader, val_loader
 
