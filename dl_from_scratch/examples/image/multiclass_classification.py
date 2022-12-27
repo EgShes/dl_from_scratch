@@ -93,11 +93,13 @@ def train_model(
     )
 
     loss = nn.CrossEntropyLoss()
-    optimizer = nn.SGD(model=model, learning_rate=lr)
+    optimizer = nn.SGDMomentum(model=model, learning_rate=lr)
 
     logger.info("Evaluating model before training")
     train_metrics.append(eval_epoch(model, train_loader, loss))
     val_metrics.append(eval_epoch(model, val_loader, loss))
+    logger.info(f"Epoch 0: {train_metrics[0].loss=:.4f}, {train_metrics[0].auc=:.4f}")
+    logger.info(f"Epoch 0: {val_metrics[0].loss=:.4f}, {val_metrics[0].auc=:.4f}")
 
     logger.info("Start training")
     for epoch in range(num_epochs):
