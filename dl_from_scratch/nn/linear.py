@@ -1,3 +1,5 @@
+from typing import Literal
+
 import numpy as np
 
 from dl_from_scratch.nn.base import Layer, Parameter
@@ -11,17 +13,32 @@ class Linear(Layer):
     y' (b) = 1
     """
 
-    def __init__(self, in_channels: int, out_channels: int) -> None:
+    def __init__(
+        self,
+        in_channels: int,
+        out_channels: int,
+        weight_init: Literal["normal", "xavier"] = "xavier",
+    ) -> None:
         self._in_channels = in_channels
         self._out_channels = out_channels
+        self._weight_init = weight_init
 
         self.initialize()
 
     def initialize(self):
         self._parameters: dict[str, Parameter] = {}
 
+        if self._weight_init == "normal":
+            scale = 1.0
+        elif self._weight_init == "xavier":
+            scale = np.sqrt(2 / (self._in_channels + self._out_channels))
+        else:
+            raise ValueError
+
         self._parameters["w"] = Parameter(
-            weight=np.random.randn(self._in_channels, self._out_channels),
+            weight=np.random.normal(
+                loc=0.0, scale=scale, size=(self._in_channels, self._out_channels)
+            ),
             gradient=np.zeros((self._in_channels, self._out_channels)),
         )
         self._parameters["b"] = Parameter(
