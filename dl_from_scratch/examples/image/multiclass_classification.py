@@ -8,6 +8,7 @@ from tqdm import tqdm
 import dl_from_scratch.nn as nn
 from dl_from_scratch.data.loader import Loader
 from dl_from_scratch.data.utils import get_mnist_loaders
+from dl_from_scratch.nn import Dropout
 from dl_from_scratch.nn.functions import softmax
 
 logging.basicConfig(level=logging.INFO)
@@ -22,6 +23,7 @@ class Metrics(NamedTuple):
 def train_epoch(
     model: nn.Sequential, loader: Loader, loss: nn.losses.Loss, optimizer: nn.Optimizer
 ) -> Metrics:
+    model.train()
     preds, gts, losses = [], [], []
     for images, labels in tqdm(loader, total=len(loader), desc="Training"):
         bs = images.shape[0]
@@ -53,6 +55,7 @@ def eval_epoch(
     loader: Loader,
     loss: nn.losses.Loss,
 ) -> Metrics:
+    model.eval()
     preds, gts, losses = [], [], []
     for images, labels in tqdm(loader, total=len(loader), desc="Evaluating"):
         bs = images.shape[0]
@@ -85,11 +88,12 @@ def train_model(
     train_loader, val_loader = get_mnist_loaders(batch_size=batch_size)
 
     model = nn.Sequential(
-        nn.Linear(784, 300),
+        nn.Linear(784, 300, weight_init="normal"),
         nn.Sigmoid(),
-        nn.Linear(300, 100),
+        nn.Linear(300, 100, weight_init="normal"),
         nn.Sigmoid(),
-        nn.Linear(100, 10),
+        nn.Linear(100, 10, weight_init="normal"),
+        Dropout(0.1),
     )
 
     loss = nn.CrossEntropyLoss()

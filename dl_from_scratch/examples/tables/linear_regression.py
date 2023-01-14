@@ -19,6 +19,7 @@ class Metrics(NamedTuple):
 def train_epoch(
     model: nn.Sequential, loader: Loader, loss: nn.losses.Loss, optimizer: nn.Optimizer
 ) -> Metrics:
+    model.train()
     preds, gts, losses = [], [], []
     for inputs, labels in tqdm(loader, total=len(loader), desc="Training"):
 
@@ -44,6 +45,7 @@ def eval_epoch(
     loader: Loader,
     loss: nn.losses.Loss,
 ) -> Metrics:
+    model.eval()
     preds, gts, losses = [], [], []
     for inputs, labels in tqdm(loader, total=len(loader), desc="Evaluating"):
         pred = model(inputs)

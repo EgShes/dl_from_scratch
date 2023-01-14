@@ -1,5 +1,6 @@
 from .sequential import Sequential  # isort:skip  to prevent circular imports
 from .activations import ReLU, Sigmoid
+from .dropout import Dropout
 from .linear import Linear
 from .losses import CrossEntropyLoss, MSELoss
 from .optimization.base import Optimizer
@@ -15,4 +16,5 @@ __all__ = [
     "Optimizer",
     "SGD",
     "SGDMomentum",
+    "Dropout",
 ]

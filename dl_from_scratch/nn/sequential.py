@@ -1,12 +1,10 @@
-from typing import Union
-
 import numpy as np
 
-from dl_from_scratch.nn.base import Activation, Layer, Parameter
+from dl_from_scratch.nn.base import Layer, Parameter
 
 
 class Sequential:
-    def __init__(self, *layers: Union[Layer, Activation]) -> None:
+    def __init__(self, *layers: Layer) -> None:
         self._layers = list(layers)
 
     def initialize(self):
@@ -29,6 +27,14 @@ class Sequential:
 
     def parameters(self) -> list[Parameter]:
         return [param for layer in self._layers for param in layer.parameters.values()]
+
+    def train(self):
+        for layer in self._layers:
+            layer.train()
+
+    def eval(self):
+        for layer in self._layers:
+            layer.eval()
 
     def __call__(self, inputs: np.ndarray) -> np.ndarray:
         return self.forward(inputs)

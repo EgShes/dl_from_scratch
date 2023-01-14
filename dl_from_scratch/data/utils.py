@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Tuple
 
 import torchvision
 from sklearn.datasets import load_boston
@@ -9,7 +8,7 @@ from sklearn.preprocessing import StandardScaler
 from dl_from_scratch.data.dataset import NumpyDataset
 from dl_from_scratch.data.loader import Loader
 
-Loaders = Tuple[Loader, Loader]  # train, val loaders
+Loaders = tuple[Loader, Loader]  # train, val loaders
 
 # TODO make it work on windows
 DATASET_DIR = Path("/tmp")

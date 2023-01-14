@@ -19,6 +19,7 @@ class Linear(Layer):
         out_channels: int,
         weight_init: Literal["normal", "xavier"] = "xavier",
     ) -> None:
+        super().__init__()
         self._in_channels = in_channels
         self._out_channels = out_channels
         self._weight_init = weight_init
@@ -86,5 +87,5 @@ class Linear(Layer):
         grad = np.dot(grad, self._parameters["w"].weight.T)
         return grad
 
-    def __str__(self) -> str:
-        return f"Linear: ({self._in_channels, self._out_channels})"
+    def __repr__(self) -> str:
+        return f"Linear: ({self._in_channels}, {self._out_channels})"

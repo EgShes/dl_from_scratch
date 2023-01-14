@@ -36,12 +36,13 @@ class DifferentiableUnit(ABC):
 
 
 class Layer(DifferentiableUnit):
-    """Base class for every neural net layer"""
+    """Base class for every neural net layer and activations"""
 
     def __init__(self, *args, **kwargs) -> None:
         """Creates and initializes parameters of a layer"""
         self._initialize_parameters()
         self._forward_info = {}
+        self._train_mode = True
 
     def _initialize_parameters(self):
         """Initializes layer's weights"""
@@ -55,27 +56,16 @@ class Layer(DifferentiableUnit):
     def backward(self, grad: np.ndarray) -> np.ndarray:
         """Performs a backward pass"""
 
+    def train(self) -> None:
+        self._train_mode = True
+
+    def eval(self) -> None:
+        self._train_mode = False
+
     @property
     def parameters(self) -> dict[str, Parameter]:
         """Returns dict with parameters of the layer"""
         return self._parameters
-
-
-class Activation(DifferentiableUnit):
-    """Base class for every activation"""
-
-    @abstractmethod
-    def forward(self, inputs: np.ndarray) -> np.ndarray:
-        """Performs a forward pass. Saves data needed for backward pass"""
-
-    @abstractmethod
-    def backward(self, grad: np.ndarray) -> np.ndarray:
-        """Performs a backward pass"""
-
-    @property
-    def parameters(self) -> dict[str, Parameter]:
-        """Returns dict with parameters of the layer"""
-        return {}
 
 
 class Loss(DifferentiableUnit):
